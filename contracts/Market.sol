@@ -13,43 +13,44 @@ contract Market is Ownable {
         data[name] = project;
     }
 
-    function getProject(string memory name) public view returns (Project) {
-        return data[name];
+    function getProject(string memory name) public view returns (address) {
+        require(address(data[name]) != address(0), "Market: getProject - Name does not exist!");
+        return address(data[name]);
     }
 
     function getProjectInfo(string memory name) public view returns (string memory) {
+        require(address(data[name]) != address(0), "Market: getProjectInfo - Name does not exist!");
         return data[name].description();
     }
 
     function getPrice(string memory name) public view returns (uint256) {
+        require(address(data[name]) != address(0), "Market: getPrice - Name does not exist!");
         return data[name].tokenPrice();
     }
 
     function getSharesCount(string memory name) public view returns (uint256) {
-        return data[name].totalSupply() - data[name].tokensSold();
+        require(address(data[name]) != address(0), "Market: getSharesCount - Name does not exist!");
+        return data[name].balanceOf(address(this));
     }
 
-    function sendProjectMoney(string memory name, uint amount) public {
-        data[name].transfer(msg.sender, amount);
-    }
-
-    function multiply(uint x, uint y) internal pure returns (uint z) {
-        require(y == 0 || (z = x * y) / y == x);
+    function multiply(uint amount, uint price) internal pure returns (uint) {
+        require(price == 0 || (amount * price) / price == amount);
+        return amount * price;
     }
 
     function buyProjectShares(string memory name, uint256 _numberOfTokens) public payable {
-        require(msg.value >= multiply(_numberOfTokens, getPrice(name)));
-        require(getSharesCount(name) >= _numberOfTokens);
-        require(data[name].transfer(msg.sender, _numberOfTokens));
-        data[name].setTokenSold(_numberOfTokens);
+        require(address(data[name]) != address(0), "Market: buyProjectShares - Name does not exist!");
+        require(msg.value >= multiply(_numberOfTokens, getPrice(name)), "Market: buyProjectShares - Incorrect amount!");
+        require(getSharesCount(name) >= _numberOfTokens, "Market: buyProjectShares - To many shares you want to buy!");
+        require(data[name].transfer(msg.sender, _numberOfTokens), "Market: Bad transfer!");
     }
 
     function sellProjectShares(string memory name, uint256 _numberOfTokens) public payable {
-        require(data[name].balanceOf(msg.sender) >= _numberOfTokens);
-        require(data[name].transferFrom(msg.sender, address(this), _numberOfTokens));
+        require(address(data[name]) != address(0), "Market: sellProjectShares - Name does not exist!");
+        require(data[name].balanceOf(msg.sender) >= _numberOfTokens, "Market: sellProjectShares - You dont have enough shares!");
+        require(data[name].transferFrom(msg.sender, address(this), _numberOfTokens), "Market: sellProjectShares - Bad transfer!");
         uint256 value = getPrice(name) * _numberOfTokens;
         msg.sender.transfer(value);
-        data[name].setTokenReturn(_numberOfTokens);
     }
 
 }

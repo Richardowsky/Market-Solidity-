@@ -5,7 +5,7 @@ const TokenAmount = 99860;
 contract("Test all market functions!", accounts => {
     var buyer = accounts[1];
     it(" ", async () => {
-        // let project2 = await Project.new("name1", "description1", "SMV", 1500, 10000000000);
+
 
         let market = await Market.new();
         await market.createProject("name2", "description2", "SGV", 150000, TokenPrice);

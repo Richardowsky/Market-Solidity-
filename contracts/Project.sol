@@ -19,12 +19,4 @@ contract Project is Ownable, ERC20 {
         tokenPrice = price;
     }
 
-    function setTokenSold(uint256 sold) public {
-       tokensSold += sold;
-    }
-
-    function setTokenReturn(uint256 back) public {
-        tokensSold -= back;
-    }
-
 }
