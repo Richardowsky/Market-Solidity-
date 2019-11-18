@@ -12,6 +12,7 @@ contract("Get Price", (accounts)  => {
   before("Project", async function() {
     market = await Market.new();
     newProject = await market.createProject("ONE", "dfi", "SGV", 123456, TokenPrice);
+    
   });
 
   it("Get project price", async () => {

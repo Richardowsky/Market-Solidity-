@@ -100,6 +100,7 @@ contract("Buying shares", async (accounts)  => {
             value: TokenPrice * TokenAmount,
             gas: 1000000 
         });
+
         expect(transaction.tx).to.be.ok;       
     });
 });
