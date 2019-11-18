@@ -1,8 +1,6 @@
 const Market = artifacts.require("./Market.sol");
-
 const chai = require ('chai');
 const expect = chai.expect;
-
 const TokenPrice = 1000000000000000;
 
 contract("Create a project", (accounts)  => {
@@ -11,10 +9,8 @@ contract("Create a project", (accounts)  => {
     it("Impossible create project if arguments >5", async () => {
       try {
         newProject = await market.createProject("dfi", "SGV", 123456, TokenPrice);
-        //console.log(newProject)
         expect.fail("No events were emitted");
-      }
-      catch(error) {
+      } catch(error) {
         expect(error.message).to.equal('Invalid number of parameters for "createProject". Got 4 expected 5!');
       }
     });
@@ -23,8 +19,7 @@ contract("Create a project", (accounts)  => {
       try {
         newProject = await market.createProject();
         expect.fail("exception should be thrown");
-      }
-      catch(error) {
+      } catch(error) {
         expect(error.message).to.equal('Invalid number of parameters for "createProject". Got 0 expected 5!');
       }
     });
@@ -37,7 +32,11 @@ contract("Create a project", (accounts)  => {
     it("Create a project", async () => {
         expect(newProject).to.be.ok;
     }); 
-  
+
+    it("project should be object", async () => {
+      expect(newProject).to.be.an('object');
+    });
+
     it("tx and transactionHash should be the same", async () => {
       expect(newProject.tx, newProject.receipt.transactionHash).to.be.ok;       
     });
@@ -53,11 +52,11 @@ contract("Create a project", (accounts)  => {
       expect(newProject.receipt.s).to.be.ok; 
     });
 
-    it.skip("impossible to create 2 projects with the same name", async () => {
-      newProject2 = await market.createProject("abc", "dfi", "SGV", 123456, TokenPrice);
-      //assert.fail("Project is created twice");
-      // expect(newProject).fail("Project is created twice")
-      expect.fail(newProject2).to.be.true;
-    });    
+    it("impossible to create 2 projects with the same name", async () => {
+        newProject1 = await market.createProject("abc", "dfi", "SGV", 123456, TokenPrice);
+        expect(newProject1.tx).to.be.ok;
 
+        newProject2 = await market.createProject("abc", "dfi", "SGV", 123456, TokenPrice);       
+        expect('Created two projects with the name abc');
+    });
 });

@@ -1,10 +1,8 @@
 const Market = artifacts.require("./Market.sol");
 const Project = artifacts.require("./Project.sol");
-const { BN } = require('bn.js');
-
+//const { BN } = require('bn.js');
 const chai = require ('chai');
 const expect = chai.expect;
-
 const TokenPrice = 1000000000000000; // wei   = 1 eth
 const TokenAmount = 99; // gwei = 0.0009986 ETHER
 ///Gas Price is 2000000000 wei
@@ -20,13 +18,11 @@ contract("Buying shares", async (accounts)  => {
         newProject = await market.createProject("abc", "dfi", "SGV", 15000, TokenPrice);
         project = await Project.at(await market.getProject("abc"));
         amountBefore = await market.getSharesCount("abc");
-        balanceBefore = await web3.eth.getBalance(buyer); // buyer ethereum after buy shares
+        balanceBefore = await web3.eth.getBalance(buyer); 
     });
   
     it("buyer before buying Shares should have wei", async () => {
-        let buyerBeforeBuyShares = await web3.eth.getBalance(buyer); 
-        //console.log(buyerBeforeBuyShares);
-        expect(buyerBeforeBuyShares).to.be.ok; // 97294184200000000000 wei 
+        expect(balanceBefore).to.be.ok; 
     });
 
     it("buyer before buying Shares should have 0 Shares", async () => {
@@ -39,11 +35,10 @@ contract("Buying shares", async (accounts)  => {
         await market.buyProjectShares("abc", TokenAmount, {
             from: buyer,
             value: TokenPrice * TokenAmount,
-            gas: 1000000 //gweo/i
+            gas: 1000000 
         });
         let buyerSharesBefore = await project.balanceOf(buyer);
-        let sharesInString = buyerSharesBefore.toString(); 
-        
+        let sharesInString = buyerSharesBefore.toString();     
         expect(sharesInString).to.equal('99')
     }); 
     
@@ -51,23 +46,20 @@ contract("Buying shares", async (accounts)  => {
         await market.buyProjectShares("abc", TokenAmount, {
             from: buyer,
             value: TokenPrice * TokenAmount,
-            gas: 1000000 //gweo/i
+            gas: 1000000 
         });
         let balanceAfter = await web3.eth.getBalance(buyer)
-        expect(balanceAfter).to.not.equal(balanceBefore);
-        
+        expect(balanceAfter).to.not.equal(balanceBefore);     
     });
 
     it("ethereum remains in the buyer's account if there are not enough funds to buy shares", async () => {
         try {
-            balanceBefore = await web3.eth.getBalance(buyer);
             const TokenAmount = 999999;
             await market.buyProjectShares("abc", TokenAmount, {
                 from: buyer,
                 value: TokenPrice * TokenAmount,
-                gas: 1000000 //gweo/i
-            });
-            
+                gas: 1000000
+            });   
             expect.fail("Returned error: sender doesn't have enough funds to send tx. The upfront cost is: 1000019000000000000000 and the sender's account only has: 96592676400000000000 -- Reason given: Market: buyProjectShares - To many shares you want to buy!");
         } catch(error) {
             expect(error.message).to.include("Returned error");           
@@ -83,7 +75,7 @@ contract("Buying shares", async (accounts)  => {
             await market.buyProjectShares("abc", TokenAmount, {
                 from: buyer,
                 value: TokenPrice * TokenAmount,
-                gas: 1000000 //gweo/i
+                gas: 1000000
             });
             expect.fail('Incorrect amount exception should be thrown');
         } catch (error){
@@ -93,53 +85,22 @@ contract("Buying shares", async (accounts)  => {
 
     it("amount of token can not be zero", async () => {
         const TokenAmount = 0;
-        await market.buyProjectShares("abc", TokenAmount, {
+        let transaction = await market.buyProjectShares("abc", TokenAmount, {
             from: buyer,
             value: TokenPrice * TokenAmount,
-            gas: 1000000 //gweo/i
+            gas: 1000000
         });
-        expect(newProject.tx).to.be.undefined
+        expect(transaction.tx).to.be.undefined;     
     });
 
-    it("amount of token should be more or = 1 for transaction", async () => {
+    it("amount of token should be more or = 1 for create transaction", async () => {
         const TokenAmount = 1;
-        let aa = await market.buyProjectShares("abc", TokenAmount, {
+        let transaction = await market.buyProjectShares("abc", TokenAmount, {
             from: buyer,
             value: TokenPrice * TokenAmount,
-            gas: 1000000 //gweo/i
+            gas: 1000000 
         });
-        expect(newProject.tx).to.be.ok;         
+        expect(transaction.tx).to.be.ok;       
     });
-
-    // it("the transaction is not completed if the buyer has 0 ethereum", async () => {
-    //     //try {
-    //         balanceBefore = await web3.eth.getBalance(buyer);
-    //         console.log(balanceBefore)
-    //         await market.buyProjectShares("abc", TokenAmount, {
-    //             from: buyer,
-    //             value: TokenPrice * TokenAmount,
-    //             gas: 11110 //gweo/i
-    //         });
-    //         let balanceAfter = await web3.eth.getBalance(buyer)
-    //         console.log(balanceAfter)
-
-    //         let buyerSharesBefore = await project.balanceOf(buyer);
-    //         let sharesInString = buyerSharesBefore.toString(); 
-
-
-    //         amountAfter = await market.getSharesCount("abc");
-
-    //         //expect(balanceAfter).to.be.equal(balanceAfter)
-           
-    //         console.log(sharesInString)
-
-             
-
-    //     //}             
-    // });
-
-    //TODO:// транзакция создана, эфир снят, баланс 0
-
-
 });
 
