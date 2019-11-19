@@ -67,7 +67,7 @@ contract("Selling shares", async (accounts)  => {
             let amountAfterSell = await market.getSharesCount("abc");
 
             expect(buyerSharesAfterSell.toString()).to.equal('5');
-            expect(amountAfterSell.toString()).to.equal('1495'); 
+            expect(amountAfterSell.toString()).to.equal('1495');
         });
 
         it("imbossinle to sell of -1 share", async () => {

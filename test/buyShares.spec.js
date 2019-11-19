@@ -1,12 +1,11 @@
 const Market = artifacts.require("./Market.sol");
 const Project = artifacts.require("./Project.sol");
-//const { BN } = require('bn.js');
 const chai = require ('chai');
 const expect = chai.expect;
 const TokenPrice = 1000000000000000; // wei   = 1 eth
 const TokenAmount = 99; // gwei = 0.0009986 ETHER
-///Gas Price is 2000000000 wei
-//const initialSupply = 15000; //new BN(100) ;
+// Gas Price is 2000000000 wei
+// initialSupply = 15000; //new BN(100) ;
 
 
 contract("Buying shares", async (accounts)  => {
@@ -100,7 +99,6 @@ contract("Buying shares", async (accounts)  => {
             value: TokenPrice * TokenAmount,
             gas: 1000000 
         });
-
         expect(transaction.tx).to.be.ok;       
     });
 });
